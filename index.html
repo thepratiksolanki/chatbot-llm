@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Live Search</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    input { width: 400px; padding: 10px; font-size: 16px; }
+    .results { margin-top: 20px; }
+    .result { padding: 8px; border-bottom: 1px solid #ddd; }
+    .result-title { font-weight: bold; font-size: 16px; }
+    .result-url { font-size: 12px; color: gray; }
+    mark { background: yellow; padding: 0 2px; }
+  </style>
+</head>
+<body>
+  <h1>🔎 Search Vehicles</h1>
+  <input type="text" id="searchBox" placeholder="Type your query..." />
+
+  <div class="results" id="results"></div>
+
+  <script>
+    const searchBox = document.getElementById("searchBox");
+    const resultsDiv = document.getElementById("results");
+
+    let timeout = null;
+
+    searchBox.addEventListener("input", () => {
+      clearTimeout(timeout);
+
+      timeout = setTimeout(() => {
+        const query = searchBox.value.trim();
+        if (query.length === 0) {
+          resultsDiv.innerHTML = "";
+          return;
+        }
+
+        // ✅ Use relative URL so it works locally & on Cloud Run
+        fetch(`/search?tenant_id=carlelo&query=${encodeURIComponent(query)}`)
+          .then(res => res.json())
+          .then(data => {
+            resultsDiv.innerHTML = "";
+            if (!Array.isArray(data) || data.length === 0) {
+              resultsDiv.innerHTML = "<p>No results found</p>";
+              return;
+            }
+
+            data.forEach(item => {
+              const div = document.createElement("div");
+              div.className = "result";
+
+              div.innerHTML = `
+                <div class="result-title">${item.title}</div>
+                <div class="result-snippet">${item.snippet}</div>
+                <div class="result-url">
+                  <a href="${item.url}" target="_blank">${item.url}</a>
+                </div>
+                <div style="font-size: 11px; color: #666;">
+                  [${item.source} match | score: ${item.score.toFixed(2)}]
+                </div>
+              `;
+              resultsDiv.appendChild(div);
+            });
+          })
+          .catch(err => {
+            resultsDiv.innerHTML = "<p style='color:red;'>Error fetching results</p>";
+            console.error(err);
+          });
+      }, 300);
+    });
+  </script>
+</body>
+</html>
