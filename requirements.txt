@@ -5,4 +5,4 @@ langchain-huggingface
 faiss-cpu
 rapidfuzz
 gunicorn
-google-cloud-storage
+sentence-transformers
