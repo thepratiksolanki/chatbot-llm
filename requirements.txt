@@ -1,0 +1,8 @@
+flask
+flask-cors
+langchain-community
+langchain-huggingface
+faiss-cpu
+rapidfuzz
+gunicorn
+google-cloud-storage
