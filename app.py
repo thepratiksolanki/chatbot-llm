@@ -10,7 +10,7 @@ from rapidfuzz import fuzz
 app = Flask(__name__)
 CORS(app)
 
-embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
+embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/paraphrase-MiniLM-L6-v2")
 
 # Local directory for vectorstores
 VECTOR_DB_DIR = "vector_dbs"
@@ -137,4 +137,5 @@ def search():
     return jsonify(final_results)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
